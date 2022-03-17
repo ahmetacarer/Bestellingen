@@ -28,7 +28,9 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        RouteCalc alg = new RouteCalc();
+        int epochs = 10;
+        int kandidaten = 10;
+        RouteCalc alg = new RouteCalc(epochs, kandidaten);
         alg.readSituation("invoerbestanden/1.txt");
         System.out.println("test");
     }
