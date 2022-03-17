@@ -1,9 +1,9 @@
-Opdracht: Bestellingen
+# Opdracht: Bestellingen
 
-Algemene Beschrijving:
+## Algemene Beschrijving:
 Studenten starten het ontwerp van een evolutionair algoritme om de optimale route van een bestelbusje te bepalen
 
-De situatie:
+## De situatie:
 Een bestelbusje moet een aantal bestellingen afleveren. Hiervoor moet een optimale route bepaalt worden. Hieronder staat aangegeven welke aspecten bepalen hoe goed een route is.
 In het project worden 3 situaties aangeleverd (1.txt, 2.txt en 3.txt). Deze files bevatten de volgende informatie:
 •	Het aantal bestemmingen dat aangedaan moet worden
@@ -17,7 +17,7 @@ Voor het bepalen van de optimale route zijn 3 dingen van belang (met bijbehorend
 •	Belangrijk: de totale afstand die afgelegd is van begin tot eind is zo kort mogelijk
 •	Een beetje belangrijk: de totale afstand die pakketjes hebben afgelegd (is ongeveer de totale wachttijd) is zo minimaal mogelijk. 
 
-Opdrachten
+## Opdrachten
 1.	Bekijk het klassendiagram in de bijlage en breidt het Javaproject uit met alle klasse-en methodedefinities. De methoden mogen nog leeg zijn
 2.	Bekijk de JavaDoc van de interface Comparable en de bijbehorende method CompareTo. Schrijf nu de methode CompareTo van de klasse Kandidaatroute zodat deze sorteerbaar wordt. (Vraag jezelf waarop je moet sorteren)
 3.	Kies het aantal kandidaatoplossingen en epochs en geef via de constructor de betreffende constanten deze waarde. Start een tekstdocument en benoem en onderbouw deze keuzes daarin.
@@ -27,7 +27,7 @@ Opdrachten
  
 Bijlage 1: Klassendiagram
 
- Toelichting
+## Toelichting
 Main: Geen toelichting nodig
 
 Kandidaatroute:
