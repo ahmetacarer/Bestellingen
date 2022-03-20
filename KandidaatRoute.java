@@ -1,4 +1,4 @@
-public class KandidaatRoute implements Comparable {
+public class KandidaatRoute implements Comparable<KandidaatRoute> {
 
     private int score;
     private int[] route;
@@ -20,7 +20,7 @@ public class KandidaatRoute implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        return 0;
+    public int compareTo(KandidaatRoute o) {
+        return getScore() - o.getScore();
     }
 }
