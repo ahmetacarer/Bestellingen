@@ -1,9 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class RouteCalc {
@@ -24,7 +21,9 @@ public class RouteCalc {
     public RouteCalc(int epochs, int kandidaten) {
         EPOCHS = epochs;
         KANDIDATEN = kandidaten;
-        epochTeller = 1;
+        epochTeller = 0;
+        scores = new int[EPOCHS];
+        kandidaatRoutes = new KandidaatRoute[KANDIDATEN];
     }
 
     public void readSituation(String file) {
@@ -68,11 +67,20 @@ public class RouteCalc {
         int totalPackages = Arrays.stream(packages)
                                     .sum();
         int[] route = kandidaatRoute.getRoute();
-        int kandidaatDistance = Arrays.stream(route)
-                                        .map(r -> distances[destinations[r]][r])
-                                        .sum();
-        int kandidaatAverageTimeForAPackage =  kandidaatDistance / Arrays.stream(route).map(r -> packages[r])
-                                                                                        .sum();
+
+
+        int[] kandidaatDestinations = new int[destinations.length];
+        int kandidaatDistance = 0;
+        for (int i = 0; i < destinations.length; i++) {
+            kandidaatDestinations[i] = destinations[route[i]];
+        }
+        for (int i = 0; i < kandidaatDestinations.length - 1; i++) {
+            kandidaatDistance += kandidaatDestinations[i] + kandidaatDestinations[i + 1];
+        }
+
+        int kandidaatAverageTimeForAPackage =  kandidaatDistance / Arrays.stream(route)
+                                                                         .map(r -> packages[r])
+                                                                         .sum();
 
         //•	Supersupersuper heel belangrijk: de route begint op het magazijn (nummer 1)
         if (route[0] == 1)
@@ -85,6 +93,7 @@ public class RouteCalc {
         //•	Een beetje belangrijk: de totale afstand die pakketjes hebben afgelegd (is ongeveer de totale wachttijd) is zo minimaal mogelijk.
         // score increases as kandidaatAverageTimeForAPackage decreases
         score -= totaldistance / totalPackages - kandidaatAverageTimeForAPackage;
+        kandidaatRoute.setScore(score);
     }
 
 
@@ -96,11 +105,12 @@ public class RouteCalc {
         });
     }
 
+    // todo: unique combinations
     public KandidaatRoute randomKandidaat() {
         Random random = new Random();
         int[] route = new int[destinations.length];
         for (int i = 0; i < route.length; i++) {
-            route[i] = destinations[random.nextInt(destinations.length)];
+            route[i] = random.nextInt(destinations.length);
         }
         KandidaatRoute kandidaatRoute = new KandidaatRoute();
         kandidaatRoute.setRoute(route);
@@ -110,8 +120,10 @@ public class RouteCalc {
     public void startSituatie() {
         while (epochTeller != EPOCHS)
         {
-            IntStream.of(KANDIDATEN).forEach(k -> kandidaatRoutes[k] = randomKandidaat());
+            IntStream.range(0, KANDIDATEN)
+                    .forEach(k -> kandidaatRoutes[k] = randomKandidaat());
             evalueerEpoch();
+            System.out.println(scores[epochTeller]);
             volgendeEpoch();
         }
     }
