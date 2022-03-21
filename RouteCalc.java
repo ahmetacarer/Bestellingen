@@ -12,7 +12,7 @@ public class RouteCalc {
     private final int KANDIDATEN;
     private final int TOTALDEST = 250;
 
-    private int[] destinations;
+    public int[] destinations;
     private int[] packages;
     private int[][] distances;
     private int epochTeller;
