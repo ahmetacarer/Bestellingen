@@ -34,12 +34,5 @@ public class Main {
         int kandidaten = 5000;
         RouteCalc alg = new RouteCalc(epochs, kandidaten);
         alg.readSituation("invoerbestanden/1.txt");
-        int aantal = (int) IntStream.range(0, alg.destinations.length)
-                .filter(i -> alg.destinations[i] != 0)
-                .count();
-        for (int i = 0; i < alg.destinations.length; i++) {
-            System.out.println(i + ": " + alg.destinations[i]);
-        }
-        System.out.println(aantal);
     }
 }

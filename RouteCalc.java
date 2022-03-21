@@ -12,7 +12,7 @@ public class RouteCalc {
     private final int KANDIDATEN;
     private final int TOTALDEST = 250;
 
-    public int[] destinations;
+    private int[] destinations;
     private int[] packages;
     private int[][] distances;
     private int epochTeller;
@@ -74,7 +74,9 @@ public class RouteCalc {
     }
 
 
-    public void evalueerEpoch(){}
+    public void evalueerEpoch(){
+
+    }
 
     public KandidaatRoute randomKandidaat() {
         Random random = new Random();

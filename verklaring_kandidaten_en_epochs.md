@@ -1,0 +1,6 @@
+# Verklaring
+
+## aantal epochs : 10
+onderbouwing...
+## aantal kandidaten : 10
+onderbouwing...
