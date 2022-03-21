@@ -83,7 +83,7 @@ public class RouteCalc {
         score += totaldistance - Arrays.stream(route).sum();
 
         //•	Een beetje belangrijk: de totale afstand die pakketjes hebben afgelegd (is ongeveer de totale wachttijd) is zo minimaal mogelijk.
-        // todo: een slimme manier vinden om de paketten met de wachttijden
+        // score increases as kandidaatAverageTimeForAPackage decreases
         score -= totaldistance / totalPackages - kandidaatAverageTimeForAPackage;
     }
 
