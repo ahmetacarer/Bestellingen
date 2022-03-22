@@ -61,6 +61,7 @@ public class RouteCalc {
     // todo: testen
     public void evalueerKandidaat(KandidaatRoute kandidaatRoute) {
         int score = 0;
+
         int totaldistance = Arrays.stream(distances)
                                         .flatMapToInt(Arrays::stream)
                                         .sum();
@@ -68,32 +69,35 @@ public class RouteCalc {
                                     .sum();
         int[] route = kandidaatRoute.getRoute();
 
-
         int[] kandidaatDestinations = new int[destinations.length];
         int kandidaatDistance = 0;
         for (int i = 0; i < destinations.length; i++) {
             kandidaatDestinations[i] = destinations[route[i]];
         }
         for (int i = 0; i < kandidaatDestinations.length - 1; i++) {
-            kandidaatDistance += kandidaatDestinations[i] + kandidaatDestinations[i + 1];
+            kandidaatDistance += distances[kandidaatDestinations[i]][kandidaatDestinations[i+1]];
         }
 
+        // todo : fout, ff aanpassen naar een sum ipv average
         int kandidaatAverageTimeForAPackage =  kandidaatDistance / Arrays.stream(route)
                                                                          .map(r -> packages[r])
                                                                          .sum();
 
         //•	Supersupersuper heel belangrijk: de route begint op het magazijn (nummer 1)
         if (route[0] == 1)
-            score += totaldistance * 3;
+            score += 10000;
 
         //•	Belangrijk: de totale afstand die afgelegd is van begin tot eind is zo kort mogelijk
         // score verhoogd op basis van de grootte van de afstand
-        score += totaldistance - Arrays.stream(route).sum();
+        score -= kandidaatDistance;
 
         //•	Een beetje belangrijk: de totale afstand die pakketjes hebben afgelegd (is ongeveer de totale wachttijd) is zo minimaal mogelijk.
         // score increases as kandidaatAverageTimeForAPackage decreases
-        score -= totaldistance / totalPackages - kandidaatAverageTimeForAPackage;
+
+        // todo: fastestTimeForAPackage / kanidaatTimeForAPackage
+        score -= kandidaatAverageTimeForAPackage;
         kandidaatRoute.setScore(score);
+        System.out.println(score);
     }
 
 
@@ -120,6 +124,7 @@ public class RouteCalc {
     public void startSituatie() {
         while (epochTeller != EPOCHS)
         {
+            System.out.println("-----------EPOCH " + epochTeller + "---------------");
             IntStream.range(0, KANDIDATEN)
                     .forEach(k -> kandidaatRoutes[k] = randomKandidaat());
             evalueerEpoch();
