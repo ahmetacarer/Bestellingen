@@ -78,37 +78,33 @@ public class RouteCalc {
             kandidaatDistance += distances[kandidaatDestinations[i]][kandidaatDestinations[i+1]];
         }
 
-        // todo : fout, ff aanpassen naar een sum ipv average
         int kandidaatTime = 0;
 
         for (int i = 0; i < route.length - 1; i++)
         {
             int distance = distances[kandidaatDestinations[i]][kandidaatDestinations[i+1]];
             if (distance == 0 || packages[route[i + 1]] == 0) {
-                score -= 10000;
+                score -= 200;
             } else {
                 kandidaatTime += distance / packages[route[i + 1]];
             }
         }
 
         //•	Supersupersuper heel belangrijk: de route begint op het magazijn (nummer 1)
-        if (route[0] == 1)
-            score += 10000;
+        if (route[0] == 0)
+            score += 100;
 
         //•	Belangrijk: de totale afstand die afgelegd is van begin tot eind is zo kort mogelijk
         // score verhoogd op basis van de grootte van de afstand
         score -= kandidaatDistance;
 
         //•	Een beetje belangrijk: de totale afstand die pakketjes hebben afgelegd (is ongeveer de totale wachttijd) is zo minimaal mogelijk.
-        // score increases as kandidaatAverageTimeForAPackage decreases
-
-        // todo: fastestTimeForAPackage / kanidaatTimeForAPackage
         score -= kandidaatTime;
-        kandidaatRoute.setScore(score);
-        System.out.println(score);
 
-        Arrays.stream(kandidaatDestinations).forEach(d -> System.out.printf("%d ->", d));
+        kandidaatRoute.setScore(score);
+            Arrays.stream(kandidaatDestinations).forEach(d -> System.out.printf("%d ->", d));
         System.out.println();
+        System.out.println(score);
 
     }
 
