@@ -79,9 +79,17 @@ public class RouteCalc {
         }
 
         // todo : fout, ff aanpassen naar een sum ipv average
-        int kandidaatAverageTimeForAPackage =  kandidaatDistance / Arrays.stream(route)
-                                                                         .map(r -> packages[r])
-                                                                         .sum();
+        int kandidaatTime = 0;
+
+        for (int i = 0; i < route.length - 1; i++)
+        {
+            int distance = distances[kandidaatDestinations[i]][kandidaatDestinations[i+1]];
+            if (distance == 0 || packages[route[i + 1]] == 0) {
+                score -= 10000;
+            } else {
+                kandidaatTime += distance / packages[route[i + 1]];
+            }
+        }
 
         //•	Supersupersuper heel belangrijk: de route begint op het magazijn (nummer 1)
         if (route[0] == 1)
@@ -95,9 +103,13 @@ public class RouteCalc {
         // score increases as kandidaatAverageTimeForAPackage decreases
 
         // todo: fastestTimeForAPackage / kanidaatTimeForAPackage
-        score -= kandidaatAverageTimeForAPackage;
+        score -= kandidaatTime;
         kandidaatRoute.setScore(score);
         System.out.println(score);
+
+        Arrays.stream(kandidaatDestinations).forEach(d -> System.out.printf("%d ->", d));
+        System.out.println();
+
     }
 
 
@@ -128,7 +140,6 @@ public class RouteCalc {
             IntStream.range(0, KANDIDATEN)
                     .forEach(k -> kandidaatRoutes[k] = randomKandidaat());
             evalueerEpoch();
-            System.out.println(scores[epochTeller]);
             volgendeEpoch();
         }
     }
