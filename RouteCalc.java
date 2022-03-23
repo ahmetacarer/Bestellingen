@@ -55,36 +55,44 @@ public class RouteCalc {
 
     //todo: optimale route bepalen
     public void bepaalRoute() {
+        KandidaatRoute besteKandidaat = kandidaatRoutes[0];
+        // naar een for loop veranderen
+        for (KandidaatRoute k:
+             kandidaatRoutes) {
+            if (k.compareTo(besteKandidaat) > 0)
+                besteKandidaat = k;
+        }
+
+        System.out.println("BESTE ROUTE EM SCORE");
+        for (int i = 0; i < destinations.length; i++) {
+            System.out.printf("%d ", destinations[besteKandidaat.getRoute()[i]]);
+        }
+        System.out.printf("%n %d", besteKandidaat.getScore());
 
     }
 
     // todo: testen
     public void evalueerKandidaat(KandidaatRoute kandidaatRoute) {
         int score = 0;
-
-        int totaldistance = Arrays.stream(distances)
-                                        .flatMapToInt(Arrays::stream)
-                                        .sum();
-        int totalPackages = Arrays.stream(packages)
-                                    .sum();
         int[] route = kandidaatRoute.getRoute();
-
         int[] kandidaatDestinations = new int[destinations.length];
         int kandidaatDistance = 0;
+
         for (int i = 0; i < destinations.length; i++) {
             kandidaatDestinations[i] = destinations[route[i]];
         }
+
         for (int i = 0; i < kandidaatDestinations.length - 1; i++) {
-            kandidaatDistance += distances[kandidaatDestinations[i]][kandidaatDestinations[i+1]];
+            kandidaatDistance += distances[kandidaatDestinations[i]][kandidaatDestinations[i + 1]];
         }
 
         int kandidaatTime = 0;
 
-        for (int i = 0; i < route.length - 1; i++)
-        {
-            int distance = distances[kandidaatDestinations[i]][kandidaatDestinations[i+1]];
+        for (int i = 0; i < route.length - 1; i++) {
+            int distance = distances[kandidaatDestinations[i]][kandidaatDestinations[i + 1]];
+            // naar magazijn 1 gaan of dezelfde destination
             if (distance == 0 || packages[route[i + 1]] == 0) {
-                score -= 200;
+                score -= 100;
             } else {
                 kandidaatTime += distance / packages[route[i + 1]];
             }
@@ -92,7 +100,7 @@ public class RouteCalc {
 
         //•	Supersupersuper heel belangrijk: de route begint op het magazijn (nummer 1)
         if (route[0] == 0)
-            score += 100;
+            score += 1000;
 
         //•	Belangrijk: de totale afstand die afgelegd is van begin tot eind is zo kort mogelijk
         // score verhoogd op basis van de grootte van de afstand
@@ -102,14 +110,15 @@ public class RouteCalc {
         score -= kandidaatTime;
 
         kandidaatRoute.setScore(score);
-            Arrays.stream(kandidaatDestinations).forEach(d -> System.out.printf("%d ->", d));
-        System.out.println();
+
+        System.out.print("route (");
+        Arrays.stream(kandidaatDestinations).forEach(d -> System.out.printf("%d ", d));
+        System.out.println(")");
         System.out.println(score);
 
     }
 
-
-    public void evalueerEpoch(){
+    public void evalueerEpoch() {
         Arrays.stream(kandidaatRoutes).forEach(k -> {
             evalueerKandidaat(k);
             // score-systeem om de vooruitgang te zien per epoch
@@ -130,14 +139,14 @@ public class RouteCalc {
     }
 
     public void startSituatie() {
-        while (epochTeller != EPOCHS)
-        {
+        while (epochTeller != EPOCHS) {
             System.out.println("-----------EPOCH " + epochTeller + "---------------");
             IntStream.range(0, KANDIDATEN)
                     .forEach(k -> kandidaatRoutes[k] = randomKandidaat());
             evalueerEpoch();
             volgendeEpoch();
         }
+        bepaalRoute();
     }
 
     // todo: pas een mutatie toe op een kandidaatroute en geef de gemuteerd kandidaatroute terug.
