@@ -15,15 +15,13 @@ public class RouteCalc {
     private int epochTeller;
 
     // alle kandidaatroutes binnen een epoch
-    private KandidaatRoute[] kandidaatRoutes;
-    private int[] scores;
+    private ArrayList<KandidaatRoute> kandidaatRoutes;
 
     public RouteCalc(int epochs, int kandidaten) {
         EPOCHS = epochs;
         KANDIDATEN = kandidaten;
         epochTeller = 0;
-        scores = new int[EPOCHS];
-        kandidaatRoutes = new KandidaatRoute[KANDIDATEN];
+        kandidaatRoutes = new ArrayList<>();
     }
 
     public void readSituation(String file) {
@@ -53,25 +51,29 @@ public class RouteCalc {
         }
     }
 
-    //todo: optimale route bepalen
     public void bepaalRoute() {
-        KandidaatRoute besteKandidaat = kandidaatRoutes[0];
+        KandidaatRoute besteKandidaat = kandidaatRoutes.get(0);
         // naar een for loop veranderen
         for (KandidaatRoute k:
-             kandidaatRoutes) {
+                kandidaatRoutes) {
             if (k.compareTo(besteKandidaat) > 0)
                 besteKandidaat = k;
         }
 
         System.out.println("BESTE ROUTE EM SCORE");
+
         for (int i = 0; i < destinations.length; i++) {
             System.out.printf("%d ", destinations[besteKandidaat.getRoute()[i]]);
         }
         System.out.printf("%n %d", besteKandidaat.getScore());
-
     }
 
-    // todo: testen
+    public int aantalDuplicaties(int[] route) {
+        return (int) Arrays.stream(route)
+                .filter(r -> r > 0)
+                .count();
+    }
+
     public void evalueerKandidaat(KandidaatRoute kandidaatRoute) {
         int score = 0;
         int[] route = kandidaatRoute.getRoute();
@@ -96,6 +98,7 @@ public class RouteCalc {
             } else {
                 kandidaatTime += distance / packages[route[i + 1]];
             }
+            score -= aantalDuplicaties(kandidaatRoute.getRoute()) * 55;
         }
 
         //•	Supersupersuper heel belangrijk: de route begint op het magazijn (nummer 1)
@@ -111,19 +114,16 @@ public class RouteCalc {
 
         kandidaatRoute.setScore(score);
 
-        System.out.print("route (");
+        System.out.print("(");
         Arrays.stream(kandidaatDestinations).forEach(d -> System.out.printf("%d ", d));
         System.out.println(")");
-        System.out.println(score);
+        Arrays.stream(route).forEach(r -> System.out.printf("%d ", r));
+        System.out.println("\n" + score);
 
     }
 
     public void evalueerEpoch() {
-        Arrays.stream(kandidaatRoutes).forEach(k -> {
-            evalueerKandidaat(k);
-            // score-systeem om de vooruitgang te zien per epoch
-            scores[epochTeller] += k.getScore();
-        });
+        kandidaatRoutes.forEach(this::evalueerKandidaat);
     }
 
     // todo: unique combinations
@@ -142,20 +142,48 @@ public class RouteCalc {
         while (epochTeller != EPOCHS) {
             System.out.println("-----------EPOCH " + epochTeller + "---------------");
             IntStream.range(0, KANDIDATEN)
-                    .forEach(k -> kandidaatRoutes[k] = randomKandidaat());
+                    .forEach(k -> kandidaatRoutes.add(randomKandidaat()));
             evalueerEpoch();
             volgendeEpoch();
         }
         bepaalRoute();
     }
 
-    // todo: pas een mutatie toe op een kandidaatroute en geef de gemuteerd kandidaatroute terug.
+    // todo: 1.	Schrijf de methode muteer die een elementaire mutatie uitvoert op een kandidaatoplossing en deze als nieuwe kandidaatoplossing teruggeeft.
     public KandidaatRoute muteer(KandidaatRoute kandidaatRoute) {
+        int duplicaties = aantalDuplicaties(kandidaatRoute.getRoute());
+        if (kandidaatRoute.getRoute()[0] != 1) {
+            kandidaatRoute.getRoute()[0] = 1;
+        } else if (duplicaties > 0) {
+            vervangDuplicaties();
+        } else {
+            optimalizeerWeg();
+        }
         return kandidaatRoute;
     }
 
+    private void optimalizeerWeg() {
+    }
+
+    private void vervangDuplicaties() {
+    }
+
+
     public void volgendeEpoch() {
         // todo : mutataties en random toevoegingen
+        sorteerKandidaten();
+        int aantalBesteKandidaten = (kandidaatRoutes.size() * 45) / 100;
+        int aantalNieuweKandidaten = kandidaatRoutes.size() / 10;
+        // removes the 55% worst candidates
+        kandidaatRoutes.subList(0, aantalBesteKandidaten)
+                .clear();
+        kandidaatRoutes.forEach(k -> k = muteer(k));
+        IntStream.range(0, aantalNieuweKandidaten).forEach(i -> kandidaatRoutes.add(randomKandidaat()));
         epochTeller++;
+    }
+
+    public void sorteerKandidaten()
+    {
+        kandidaatRoutes.sort(KandidaatRoute::compareTo);
     }
 }
