@@ -132,10 +132,10 @@ public class RouteCalc {
     }
 
     public void startSituatie() {
+        IntStream.range(0, KANDIDATEN)
+                .forEach(k -> kandidaatRoutes.add(randomKandidaat()));
         while (epochTeller != EPOCHS) {
             System.out.println("-----------EPOCH " + epochTeller + "---------------");
-            IntStream.range(0, KANDIDATEN)
-                    .forEach(k -> kandidaatRoutes.add(randomKandidaat()));
             evalueerEpoch();
             volgendeEpoch();
         }
