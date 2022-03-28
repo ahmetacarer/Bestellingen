@@ -136,6 +136,7 @@ public class RouteCalc {
                 .forEach(k -> kandidaatRoutes.add(randomKandidaat()));
         while (epochTeller != EPOCHS) {
             System.out.println("-----------EPOCH " + epochTeller + "---------------");
+            System.out.printf("aantal kandidaten: %d", kandidaatRoutes.size());
             evalueerEpoch();
             volgendeEpoch();
         }
@@ -149,7 +150,7 @@ public class RouteCalc {
         if (route[0] != 0) {
             route[0] = 0;
         } else if (duplicaties > 0) {
-            vervangEenDuplicatie(route);
+            vervangDuplicaties(route);
         } else {
             optimalizeerWeg(route);
         }
@@ -203,7 +204,7 @@ public class RouteCalc {
         return kandidaatDistances;
     }
 
-    private void vervangEenDuplicatie(int[] route) {
+    private void vervangDuplicaties(int[] route) {
         HashSet<Integer> uniqueNumbers = new HashSet<>();
         HashSet<Integer> duplicates = new HashSet<>();
         ArrayList<Integer> missingNumbers = new ArrayList<>();
@@ -237,7 +238,6 @@ public class RouteCalc {
 
 
     public void volgendeEpoch() {
-        // todo : mutataties en random toevoegingen
         sorteerKandidaten();
         int aantalBesteKandidaten = (kandidaatRoutes.size() * 45) / 100;
         int aantalNieuweKandidaten = kandidaatRoutes.size() / 10;
