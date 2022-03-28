@@ -31,7 +31,7 @@ public class Main {
 
     public static void main(String[] args) {
         int epochs = 150;
-        int kandidaten = 500;
+        int kandidaten = 3500;
         RouteCalc alg = new RouteCalc(epochs, kandidaten);
         alg.readSituation("invoerbestanden/1.txt");
         alg.startSituatie();

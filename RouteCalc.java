@@ -60,7 +60,7 @@ public class RouteCalc {
                 besteKandidaat = k;
         }
 
-        System.out.println("BESTE ROUTE EM SCORE");
+        System.out.println("BESTE ROUTE EN SCORE");
 
         for (int i = 0; i < destinations.length; i++) {
             System.out.printf("%d ", destinations[besteKandidaat.getRoute()[i]]);
@@ -70,7 +70,7 @@ public class RouteCalc {
 
     public int aantalDuplicaties(int[] route) {
         return (int) Arrays.stream(route)
-                .filter(r -> r > 0)
+                .filter(r -> r >= 0)
                 .count();
     }
 
@@ -98,8 +98,8 @@ public class RouteCalc {
             } else {
                 kandidaatTime += distance / packages[route[i + 1]];
             }
-            score -= aantalDuplicaties(kandidaatRoute.getRoute()) * 55;
         }
+        score -= aantalDuplicaties(kandidaatRoute.getRoute()) * 150;
 
         //•	Supersupersuper heel belangrijk: de route begint op het magazijn (nummer 1)
         if (route[0] == 0)
@@ -113,13 +113,6 @@ public class RouteCalc {
         score -= kandidaatTime;
 
         kandidaatRoute.setScore(score);
-
-        System.out.print("(");
-        Arrays.stream(kandidaatDestinations).forEach(d -> System.out.printf("%d ", d));
-        System.out.println(")");
-        Arrays.stream(route).forEach(r -> System.out.printf("%d ", r));
-        System.out.println("\n" + score);
-
     }
 
     public void evalueerEpoch() {
@@ -151,21 +144,95 @@ public class RouteCalc {
 
     // todo: 1.	Schrijf de methode muteer die een elementaire mutatie uitvoert op een kandidaatoplossing en deze als nieuwe kandidaatoplossing teruggeeft.
     public KandidaatRoute muteer(KandidaatRoute kandidaatRoute) {
-        int duplicaties = aantalDuplicaties(kandidaatRoute.getRoute());
-        if (kandidaatRoute.getRoute()[0] != 1) {
-            kandidaatRoute.getRoute()[0] = 1;
+        int[] route = kandidaatRoute.getRoute();
+        int duplicaties = aantalDuplicaties(route);
+        if (route[0] != 0) {
+            route[0] = 0;
         } else if (duplicaties > 0) {
-            vervangDuplicaties();
+            vervangEenDuplicatie(route);
         } else {
-            optimalizeerWeg();
+            optimalizeerWeg(route);
         }
         return kandidaatRoute;
     }
 
-    private void optimalizeerWeg() {
+    private void optimalizeerWeg(int[] route) {
+        System.out.println("hello world");
+        int[] kandidaatDistances = getKandidaatDistances(getKandidaatDestinations(route));
+        int[] indexesWithBiggestDistances = getIndexesOfBiggestDistances(kandidaatDistances);
+        route[indexesWithBiggestDistances[0]] = route[indexesWithBiggestDistances[1]];
+        route[indexesWithBiggestDistances[1]] = route[indexesWithBiggestDistances[0]];
     }
 
-    private void vervangDuplicaties() {
+    private int[] getIndexesOfBiggestDistances(int[] kandidaatDistances)
+    {
+        int[] biggestDistances = new int[2];
+        int[] indexes = new int[2];
+        for (int i = 0; i < kandidaatDistances.length; i++) {
+            if (kandidaatDistances[i] >= biggestDistances[0]) {
+                biggestDistances[0] = kandidaatDistances[i];
+                indexes[0] = i + 1;
+            }
+            else if (kandidaatDistances[i] >= biggestDistances[1]) {
+                biggestDistances[1] = kandidaatDistances[i];
+                indexes[1] = i + 1;
+            }
+        }
+        return biggestDistances;
+    }
+
+    private int[] getKandidaatDestinations(int[] route)
+    {
+        int[] kandidaatDestinations = new int[route.length];
+        for (int i = 0; i < destinations.length; i++) {
+            kandidaatDestinations[i] = destinations[route[i]];
+        }
+        return kandidaatDestinations;
+    }
+
+    private int[] getKandidaatDistances(int[] kandidaatDestinations)
+    {
+        int[] kandidaatDistances = new int[destinations.length - 1];
+        for (int i = 0; i < kandidaatDistances.length; i++) {
+            int kandidaatDistance = 0;
+            for (int j = 0; j < kandidaatDestinations.length - 1; j++) {
+                kandidaatDistance += distances[kandidaatDestinations[i]][kandidaatDestinations[i + 1]];
+            }
+            kandidaatDistances[i] = kandidaatDistance;
+        }
+        return kandidaatDistances;
+    }
+
+    private void vervangEenDuplicatie(int[] route) {
+        HashSet<Integer> uniqueNumbers = new HashSet<>();
+        HashSet<Integer> duplicates = new HashSet<>();
+        ArrayList<Integer> missingNumbers = new ArrayList<>();
+        for (int i = 0; i < route.length; i++) {
+            int val = route[i];
+            if (uniqueNumbers.contains(val)) {
+                duplicates.add(val);
+            } else {
+                uniqueNumbers.add(val);
+            }
+        }
+
+        IntStream.range(0, route.length)
+                .forEach(i -> {
+                    if (!uniqueNumbers.contains(i))
+                        missingNumbers.add(i);
+                });
+
+        for (int i = 0; i < route.length; i++) {
+            if (missingNumbers.isEmpty()) {
+                break;
+            }
+            if (duplicates.contains(route[i])) {
+                int randomIndex = new Random().nextInt(missingNumbers.size());
+                route[i] = missingNumbers.get(randomIndex);
+                duplicates.remove(route[i]);
+                missingNumbers.remove(randomIndex);
+            }
+        }
     }
 
 
