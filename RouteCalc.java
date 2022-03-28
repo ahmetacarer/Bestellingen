@@ -143,7 +143,6 @@ public class RouteCalc {
         bepaalRoute();
     }
 
-    // todo: 1.	Schrijf de methode muteer die een elementaire mutatie uitvoert op een kandidaatoplossing en deze als nieuwe kandidaatoplossing teruggeeft.
     public KandidaatRoute muteer(KandidaatRoute kandidaatRoute) {
         int[] route = kandidaatRoute.getRoute();
         int duplicaties = aantalDuplicaties(route);
@@ -244,7 +243,9 @@ public class RouteCalc {
         // removes the 55% worst candidates
         kandidaatRoutes.subList(0, aantalBesteKandidaten)
                 .clear();
-        kandidaatRoutes.forEach(k -> k = muteer(k));
+        for (int i = 0; i < kandidaatRoutes.size(); i++) {
+            kandidaatRoutes.add(muteer(kandidaatRoutes.get(i)));
+        }
         IntStream.range(0, aantalNieuweKandidaten).forEach(i -> kandidaatRoutes.add(randomKandidaat()));
         epochTeller++;
     }
